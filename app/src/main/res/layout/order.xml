@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginRight="50dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="40dp"
         android:background="@drawable/order_list_style"
         android:hapticFeedbackEnabled="false"
         android:orientation="vertical"
@@ -26,9 +26,10 @@
             <TextView
                 android:id="@+id/txtViewOrderNumber"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Narudžba br. "
+                android:paddingLeft="5dp"
+                android:text="\n Narudžba broj:"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
@@ -36,10 +37,10 @@
                 android:id="@+id/txtOrderNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="65dp"
                 android:layout_weight="1"
                 android:background="@drawable/number_order_frame_style"
-                android:paddingLeft="25dp"
+                android:gravity="center"
                 android:text="1"
                 android:textColor="@color/black"
                 android:textSize="55sp"
@@ -79,6 +80,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/imgTakeAway"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/takeaway" />
         </FrameLayout>
 
     </LinearLayout>

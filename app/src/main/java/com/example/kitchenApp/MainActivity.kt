@@ -18,8 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ordersRecyclerView: RecyclerView
     var currentOrderList: ArrayList<Order> = ArrayList()
     var acceptedOrderList: ArrayList<Order> = ArrayList()
-    var accepted = false
-    var removed: Boolean = false
+    var readyOrderList: ArrayList<Order> = ArrayList()
 
     fun createLists(){
         var orderItems = arrayListOf<OrderItem>(OrderItem("Margarita", 0, true),
@@ -28,33 +27,22 @@ class MainActivity : AppCompatActivity() {
             OrderItem("Pahuljice", 0, true),
             OrderItem("Pileća salata", 2, true),
             OrderItem("Tartufi", 10, true))
-        this.currentOrderList = arrayListOf(Order(1, true, orderItems),
-            Order(2, true, orderItems),
+        this.currentOrderList = arrayListOf(Order(1, false, orderItems),
+            Order(2, false, orderItems),
             Order(3, true, orderItems),
             Order(4, true, orderItems),
-            Order(5, true, orderItems),
-            Order(6, true, orderItems))
+            Order(5, false, orderItems),
+            Order(6, false, orderItems))
     }
-    fun fixCookVisibility(){
+    fun fixCookVisibility(checkList: ArrayList<Order>){
         val imgCook = findViewById<ImageView>(R.id.imgCook)
         val txtNoCards = findViewById<TextView>(R.id.txtNoCards)
-        if(accepted){ //Accepted
-            if (acceptedOrderList.isEmpty()) {
-                imgCook.visibility = View.VISIBLE
-                txtNoCards.visibility = View.VISIBLE
-            } else {
-                imgCook.visibility = View.INVISIBLE
-                txtNoCards.visibility = View.INVISIBLE
-            }
-        }
-        else{ //Orders
-            if (currentOrderList.isEmpty()) {
-                imgCook.visibility = View.VISIBLE
-                txtNoCards.visibility = View.VISIBLE
-            } else{
-                imgCook.visibility = View.INVISIBLE
-                txtNoCards.visibility = View.INVISIBLE
-            }
+        if (checkList.isEmpty()) {
+            imgCook.visibility = View.VISIBLE
+            txtNoCards.visibility = View.VISIBLE
+        } else {
+            imgCook.visibility = View.INVISIBLE
+            txtNoCards.visibility = View.INVISIBLE
         }
     }
 
@@ -68,42 +56,52 @@ class MainActivity : AppCompatActivity() {
         txtAcceptedCards.text = acceptedOrderList.size.toString()
         txtNumberOfOrderCards.text = currentOrderList.size.toString()
 
-        //  Buttons Orders and Accepted :
+        //  Buttons Orders, Accepted and Ready :
         val btnAccept = findViewById<Button>(R.id.btnAccept)
         val btnOrders = findViewById<Button>(R.id.btnOrders)
-        val textView = findViewById<TextView>(R.id.textView)
+        val btnReady = findViewById<Button>(R.id.btnReady)
 
         btnOrders.isActivated = true
         btnAccept.isActivated = false
 
-        btnAccept.setOnClickListener {
-            accepted = true
-            btnAccept.isActivated = accepted
-            btnOrders.isActivated = false
-            var adapterAcc = OrdersAdapter(this.acceptedOrderList, false) { order, item ->
-                run {
-                    ordersRecyclerView.adapter?.notifyDataSetChanged()
-                }
-            }
-            fixCookVisibility()
-            ordersRecyclerView.adapter = adapterAcc
-            textView.text = "PRIHVAĆENO"
-            getUserDataAcc()
-        }
-
         btnOrders.setOnClickListener {
-            accepted = false
             btnOrders.isActivated = true
             btnAccept.isActivated = false
-            var adapterOrdr = OrdersAdapter(this.currentOrderList,true) { order, item ->
+            btnReady.isActivated = false
+            var adapterOrdr = OrdersAdapter(this.currentOrderList,0) { order, item ->
                 run {
                     ordersRecyclerView.adapter?.notifyDataSetChanged()
                 }
             }
-            fixCookVisibility()
+            fixCookVisibility(currentOrderList)
             ordersRecyclerView.adapter = adapterOrdr
-            textView.text = "NARUDŽBA"
             getUserData()
+        }
+
+        btnAccept.setOnClickListener {
+            btnAccept.isActivated = true
+            btnOrders.isActivated = false
+            btnReady.isActivated = false
+            var adapterAcc = OrdersAdapter(this.acceptedOrderList, 1) { order, item ->
+                run {
+                    ordersRecyclerView.adapter?.notifyDataSetChanged()
+                }
+            }
+            fixCookVisibility(acceptedOrderList)
+            ordersRecyclerView.adapter = adapterAcc
+            getUserDataAcc()
+        }
+        btnReady.setOnClickListener {
+            btnOrders.isActivated = false
+            btnAccept.isActivated = false
+            btnReady.isActivated = true
+            var adapterReady = OrdersAdapter(this.readyOrderList,2) { order, item ->
+                run {
+                    ordersRecyclerView.adapter?.notifyDataSetChanged()
+                }
+            }
+            fixCookVisibility(readyOrderList)
+            ordersRecyclerView.adapter = adapterReady
         }
 
         ordersRecyclerView = findViewById(R.id.orderItemsRecyclerView)
@@ -113,21 +111,27 @@ class MainActivity : AppCompatActivity() {
         getUserData()
     }
 
-    private fun getUserData() {
+
+    //Funkcije za izmjenu nizova:
+    private fun getUserData() { //Pokreće se odlaskom na window Narudžbe
         var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
         var txtNumberOfOrderCards = findViewById<TextView>(R.id.txtNumberOfOrderCards)
-        var adapter = OrdersAdapter(this.currentOrderList, false) { order, item ->
+        var adapter = OrdersAdapter(this.currentOrderList, 0) { order, item ->
             run {
-                if (!accepted && item.orderName=="0") {
+                if ( item.orderName=="0") {//!accepted &&
+                    if(acceptedOrderList.indexOfFirst { it.id == order.id }!=-1){
+                        acceptedOrderList.find { it.id == order.id }?.orderItems?.addAll(order.orderItems)
+                    }
+                    else{acceptedOrderList.add(order)}
                     this.currentOrderList.remove(order)
-                    this.acceptedOrderList.add(order)
+
                     ordersRecyclerView.adapter?.notifyDataSetChanged()
                     txtAcceptedCards.text = acceptedOrderList.size.toString()
                     txtNumberOfOrderCards.text = currentOrderList.size.toString()
-                    fixCookVisibility()
+                    fixCookVisibility(currentOrderList)
                 }
                 else {
-                    orderItemInteraction(order, item)
+                    orderItemInteraction(currentOrderList, acceptedOrderList,order, item)
                     ordersRecyclerView.adapter?.notifyDataSetChanged()
                 }
             }
@@ -135,46 +139,64 @@ class MainActivity : AppCompatActivity() {
         ordersRecyclerView.adapter = adapter
     }
 
-    private fun getUserDataAcc() {
+    private fun getUserDataAcc() { //Pokreće se odlaskom na window Prihvaćeno
         var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
-        var adapter = OrdersAdapter(this.acceptedOrderList,true) { order, item ->
+        var txtReadyCards = findViewById<TextView>(R.id.txtReadyCards)
+        var adapter = OrdersAdapter(this.acceptedOrderList,1) { order, item ->
             run {
-                if (accepted && item.orderName=="0") {
+                if (item.orderName=="0") {//accepted &&
                     this.acceptedOrderList.remove(order)
+                    if(readyOrderList.indexOfFirst { it.id == order.id }!=-1){
+                        readyOrderList.find { it.id == order.id }?.orderItems?.addAll(order.orderItems)
+                    }
+                    else{
+                        this.readyOrderList.add(order)
+                    }
                     ordersRecyclerView.adapter?.notifyDataSetChanged()
                     txtAcceptedCards.text = acceptedOrderList.size.toString()
-                    fixCookVisibility()
+                    txtReadyCards.text = readyOrderList.size.toString()
+                    fixCookVisibility(acceptedOrderList)
                 }
-                else orderItemInteraction(order, item)
+                else {
+                    //acceptedOrderList.find { it.id == order.id }?.orderItems?.remove(item)
+                    orderItemInteraction(acceptedOrderList, readyOrderList,order, item)
+                    ordersRecyclerView.adapter?.notifyDataSetChanged()
+                }
             }
         }
         ordersRecyclerView.adapter = adapter
     }
-    private fun orderItemInteraction(order: Order, item: OrderItem){
-        val textView = findViewById<TextView>(R.id.textView)
-        val textView2 = findViewById<TextView>(R.id.textView2)
 
-        var orderTemp = order
-        if(order in acceptedOrderList){
 
+    //Funkcija koja briše narudžbe(item-e) u karticama prvog niza
+    //i prebacuje ih u drugi niz:
+    private fun orderItemInteraction(orderedArray: ArrayList<Order>, acceptedArray: ArrayList<Order>,
+                                     order: Order, item: OrderItem){
+
+        var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
+        var txtNumberOfOrderCards = findViewById<TextView>(R.id.txtNumberOfOrderCards)
+        var txtReadyCards = findViewById<TextView>(R.id.txtReadyCards)
+
+        var orderItemListTemp = ArrayList<OrderItem>(order.orderItems.toList())
+        var orderTemp = Order(order.id, order.status, orderItemListTemp)
+
+        var arrayTemp : ArrayList<OrderItem> = ArrayList()
+        arrayTemp.add(item)
+        var orderTempAcc = Order(order.id, order.status, arrayTemp)
+
+        if(acceptedArray.indexOfFirst { it.id == order.id }!=-1){
+            acceptedArray.find { it.id == order.id }?.orderItems?.add(item)
+            orderTemp.orderItems.remove(item)
+            orderedArray.find { it.id == order.id }?.orderItems=orderTemp.orderItems
         }
         else{
-
-            var index = currentOrderList.indexOf(order)
-            var indexItema = currentOrderList[index].orderItems.indexOf(item)
-            textView.text = currentOrderList[0].orderItems[0].orderName
-            textView2.text = currentOrderList[1].orderItems[0].orderName
-
             orderTemp.orderItems.remove(item)
-
-            //var index = order.id
-            //textView.text = index.toString()
-            //currentOrderList.find { it.id == order.id }?.orderItems=orderTemp.orderItems
-            val condition: (OrderItem) -> Boolean = { orderItem -> orderItem.orderName==item.orderName }
-            currentOrderList[index].orderItems.removeIf(condition)
-          // currentOrderList.filter { it.id == order.id }.forEach{it.orderItems = orderTemp.orderItems}
-
+            orderedArray.find { it.id == order.id }?.orderItems=orderTemp.orderItems
+            acceptedArray.add(orderTempAcc)
         }
+        txtAcceptedCards.text = acceptedOrderList.size.toString()
+        txtNumberOfOrderCards.text = currentOrderList.size.toString()
+        txtReadyCards.text = readyOrderList.size.toString()
     }
 
 }
