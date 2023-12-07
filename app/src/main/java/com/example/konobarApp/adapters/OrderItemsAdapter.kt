@@ -1,14 +1,14 @@
-package com.example.kitchenApp.adapters
+package com.example.konobarApp.adapters
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckedTextView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kitchenApp.R
-import com.example.kitchenApp.models.Order
-import com.example.kitchenApp.models.OrderItem
+import com.example.konobarApp.R
+import com.example.konobarApp.models.OrderItem
 
 class OrderItemsAdapter(private val orderItemsList: ArrayList<OrderItem>,
                         private val activated:Int, //n=0, acc=1, ready=2
@@ -16,7 +16,7 @@ class OrderItemsAdapter(private val orderItemsList: ArrayList<OrderItem>,
                         private val onItemButtonClicked: ((itemClicked: OrderItem)->Unit)): RecyclerView.Adapter<OrderItemsAdapter.OrdersItemsViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrdersItemsViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_list,parent, false )
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.items_list,parent, false )
         return OrdersItemsViewHolder(itemView)
     }
 
@@ -26,7 +26,7 @@ class OrderItemsAdapter(private val orderItemsList: ArrayList<OrderItem>,
 
     override fun onBindViewHolder(holder: OrdersItemsViewHolder, position: Int) {
         val currentItem = orderItemsList[position]
-        holder.orderName.text = currentItem.orderName
+        /*holder.orderName.text = currentItem.orderName
         holder.btnAcceptOrder.isActivated = false
         holder.btnAcceptOrder.visibility = View.VISIBLE
         if(activated == 1){
@@ -51,13 +51,18 @@ class OrderItemsAdapter(private val orderItemsList: ArrayList<OrderItem>,
 
         holder.btnAcceptOrder.setOnClickListener {
             onItemButtonClicked(currentItem)
+        }*/
+        holder.checkedTxtItem.text = currentItem.orderName
+        holder.checkedTxtItem.setOnClickListener{
+            holder.checkedTxtItem.isChecked = !holder.checkedTxtItem.isChecked
         }
+       // onItemButtonClicked(OrderItem("0",0,false))
     }
 
     class OrdersItemsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-
-        val orderName: TextView = itemView.findViewById(R.id.txtVOrder)
-        val btnAcceptOrder: Button = itemView.findViewById(R.id.btnAcceptOrder)
+        val checkedTxtItem: CheckedTextView = itemView.findViewById(R.id.checkedTxtItem)
+        //val orderName: TextView = itemView.findViewById(R.id.txtVOrder)
+        //val btnAcceptOrder: Button = itemView.findViewById(R.id.btnAcceptOrder)
 
     }
 

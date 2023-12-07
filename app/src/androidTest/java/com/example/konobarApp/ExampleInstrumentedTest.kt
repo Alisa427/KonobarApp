@@ -1,4 +1,4 @@
-package com.example.kitchenApp
+package com.example.konobarApp
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

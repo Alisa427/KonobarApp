@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +52,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="110dp"
                         android:paddingTop="27dp"
-                        android:text="Kuhar: "
+                        android:text="Konobar: "
                         android:textSize="24sp" />
 
                     <TextView
@@ -61,7 +62,7 @@
                         android:paddingLeft="10dp"
                         android:paddingTop="27dp"
                         android:paddingRight="10dp"
-                        android:text="Niko Nikić"
+                        android:text="Svako Svakić"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
@@ -82,7 +83,8 @@
                                 android:backgroundTint="#00FFFFFF"
                                 android:scaleType="fitCenter"
                                 android:src="@drawable/person_icon"
-                                tools:src="@drawable/person_icon" />
+                                tools:src="@drawable/person_icon"
+                                app:showAsAction="ifRoom"/>
 
                         </LinearLayout>
 
@@ -151,7 +153,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/btns_accepted_ordered_styles"
                             android:paddingLeft="20dp"
-                            android:text="Prihvaćeno"
+                            android:text="Stolovi"
                             android:textAlignment="textStart"
                             android:textColor="@color/black"
                             android:textSize="20dp"
@@ -225,6 +227,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/RecyclerVPozadina"
+                android:layout_width="match_parent"
+                android:layout_height="760dp"
+                android:background="@drawable/recyclerview_style"
+                android:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleViewTables"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="50dp"
+                android:background="@drawable/recyclerview_style"
+                android:fadeScrollbars="true"
+                android:paddingLeft="55dp"
+                android:paddingTop="55dp"
+                android:paddingRight="55dp"
+                android:paddingBottom="55dp"
+                android:scrollbarSize="10dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical"
+                android:visibility="invisible" />
+
             <ImageView
                 android:id="@+id/imgCook"
                 android:layout_width="match_parent"
@@ -234,8 +259,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="0dp"
+                android:paddingLeft="200dp"
                 android:paddingTop="20dp"
-                android:src="@drawable/cook"
+                android:src="@drawable/waiter_icon"
                 android:translationZ="10dp"
                 android:visibility="invisible" />
 
@@ -260,10 +286,15 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="50dp"
                 android:background="@drawable/recyclerview_style"
+                android:fadeScrollbars="true"
                 android:paddingLeft="55dp"
                 android:paddingTop="55dp"
                 android:paddingRight="55dp"
-                android:paddingBottom="55dp" />
+                android:paddingBottom="55dp"
+                android:scrollbarSize="10dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="horizontal"
+                android:visibility="visible" />
         </RelativeLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Kitchen App"
+rootProject.name = "Konobar App"
 include(":app")
  

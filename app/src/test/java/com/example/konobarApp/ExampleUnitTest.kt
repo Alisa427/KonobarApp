@@ -1,4 +1,4 @@
-package com.example.kitchenApp
+package com.example.konobarApp
 
 import org.junit.Test
 
