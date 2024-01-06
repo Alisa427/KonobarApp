@@ -1,10 +1,8 @@
 package com.example.konobarApp
 
-import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -14,8 +12,6 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -112,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         var txtCook = findViewById<TextView>(R.id.txtCook)
         var brStolova = 15
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.kitchen_activity)
+        setContentView(R.layout.konobar_activity)
         createLists(brStolova)
 
         //  Buttons Orders, Accepted and Ready :
