@@ -2,9 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginRight="50dp">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,17 +26,18 @@
 
             <TextView
                 android:id="@+id/txtViewOrderNumber"
-                android:layout_width="wrap_content"
+                android:layout_width="230dp"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="80dp"
                 android:layout_weight="1"
                 android:paddingLeft="5dp"
-                android:text="\n Narudžba broj:"
+                android:text="\n Stol broj:"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/txtOrderNumber"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="65dp"
                 android:layout_weight="1"
@@ -46,14 +48,24 @@
                 android:textSize="55sp"
                 android:textStyle="bold" />
 
+            <Space
+                android:layout_width="180dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
             <Button
-                android:id="@+id/btnAcceptAll"
-                android:layout_width="100dp"
-                android:layout_height="48dp"
+                android:id="@+id/btnX"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center_horizontal|center"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="25dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_accept_all_styles"
-                android:text="PRIHVATI SVE"
-                android:textColor="@color/white" />
+                android:text="X"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -64,9 +76,13 @@
             android:background="?android:attr/listDivider" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewDrinks"
+            android:id="@+id/recyclerViewOrder"
             android:layout_width="match_parent"
-            android:layout_height="400dp">
+            android:layout_height="600dp"
+            android:scrollbarSize="7dp"
+            android:scrollbarStyle="insideOverlay"
+            android:scrollbars="vertical"
+            android:verticalScrollbarPosition="left">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -76,19 +92,38 @@
             android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="25dp"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/imgTakeAway"
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="30dp"
+                android:layout_weight="1"
+                android:text="Za naplatiti: 0.00 KM"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <Space
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:src="@drawable/takeaway" />
-        </FrameLayout>
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnNaplati"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="40dp"
+                android:layout_weight="1"
+                android:text="Naplati"
+                android:textSize="20sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

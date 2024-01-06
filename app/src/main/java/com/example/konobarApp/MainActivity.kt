@@ -1,5 +1,6 @@
 package com.example.konobarApp
 
+import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -13,42 +14,76 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.konobarApp.adapters.OrdersAdapter
+import com.example.konobarApp.adapters.OrdersDayActivityAdapter
 import com.example.konobarApp.adapters.TablesAdapter
 import com.example.konobarApp.models.Order
 import com.example.konobarApp.models.OrderItem
+//import serverStuff.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
 
     var nurl: String? = null
     private lateinit var ordersRecyclerView: RecyclerView
     private lateinit var recycleViewTables: RecyclerView
+    
     var currentOrderList: ArrayList<Order> = ArrayList()
-    var ordersToBePayed: ArrayList<Order> = ArrayList()
-    var readyOrderList: ArrayList<Order> = ArrayList()
+    var tablesOrders: ArrayList<Order> = ArrayList()
+    var dayActivity: ArrayList<Order> = ArrayList()
+
+    var sankOrders: ArrayList<OrderItem> = ArrayList()
+    var readyMeals: ArrayList<OrderItem> = ArrayList()
+    var inPreparationMeals: ArrayList<OrderItem> = ArrayList()
 
     fun createLists(number: Int){
-        var orderItems = arrayListOf<OrderItem>(OrderItem("Margarita", 0, true),
-            OrderItem("Pileći sendvič", 0, true),
-            OrderItem("Begova corba", 1, true),
-            OrderItem("Pahuljice", 0, true),
-            OrderItem("Pileća salata", 2, true),
-            OrderItem("Tartufi", 10, true))
-        this.currentOrderList = arrayListOf(Order(1, false, orderItems),
-            Order(2, false, orderItems),
-            Order(3, true, orderItems),
-            Order(4, true, orderItems),
-            Order(5, false, orderItems),
-            Order(6, false, orderItems))
-        this.ordersToBePayed = ArrayList()
+        this.sankOrders = arrayListOf<OrderItem>(OrderItem("Sky cola", 0, false),
+            OrderItem("Ness vanilija", 1, false),
+            OrderItem("Espresso", 0, false),
+            OrderItem("Nutela torta", 2, false),
+            OrderItem("Mineralna voda", 10, false))
+        var  sankOrders2 = arrayListOf<OrderItem>(OrderItem("Sky cola", 0, false),
+            OrderItem("Ness vanilija", 1, false),
+            OrderItem("Espresso", 0, false),
+            OrderItem("Nutela torta", 2, false),
+            OrderItem("Mineralna voda", 10, false))
+        this.readyMeals = arrayListOf<OrderItem>(OrderItem("Margarita", 0, false),
+            OrderItem("Pileći sendvič", 0, false),
+            OrderItem("Begova corba", 1, false),
+            OrderItem("Pahuljice", 0, false))
+        var readyMeals2 = arrayListOf<OrderItem>(OrderItem("Margarita", 0, false),
+            OrderItem("Pileći sendvič", 0, false),
+            OrderItem("Begova corba", 1, false),
+            OrderItem("Trotilja", 0, false))
+        this.inPreparationMeals = arrayListOf<OrderItem>(OrderItem("Mexikana", 0, false),
+            OrderItem("Tuna pizza", 0, false),
+            OrderItem("Pileća salata", 2, false),
+            OrderItem("Tartufi", 10, false))
+        var inPreparationMeals2 = arrayListOf<OrderItem>(OrderItem("Mexikana", 0, false),
+            OrderItem("Tuna pizza", 0, false),
+            OrderItem("Pileća salata", 2, false))
+
+        this.currentOrderList = arrayListOf(Order(1, false, sankOrders, readyMeals,inPreparationMeals),
+            Order(2, false, sankOrders2, readyMeals2, inPreparationMeals2),
+            Order(3, true, sankOrders, readyMeals, inPreparationMeals),
+            Order(4, true, sankOrders, readyMeals, inPreparationMeals),
+            Order(5, false, sankOrders, readyMeals, inPreparationMeals),
+            Order(6, false, sankOrders, readyMeals, inPreparationMeals))
+        
         for(i in 1..number){
-            ordersToBePayed.add(Order(i, false, orderItems))
+            tablesOrders.add(Order(i, false, ArrayList(), ArrayList(),ArrayList()))
         }
     }
     fun fixCookVisibility(checkList: ArrayList<Order>){
+
+        var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
+        var txtNumberOfOrderCards = findViewById<TextView>(R.id.txtNumberOfOrderCards)
+        var txtReadyCards = findViewById<TextView>(R.id.txtReadyCards)
+
         val imgCook = findViewById<ImageView>(R.id.imgCook)
         val txtNoCards = findViewById<TextView>(R.id.txtNoCards)
         if (checkList.isEmpty()) {
@@ -58,17 +93,28 @@ class MainActivity : AppCompatActivity() {
             imgCook.visibility = View.INVISIBLE
             txtNoCards.visibility = View.INVISIBLE
         }
+        txtAcceptedCards.text = tablesOrders.size.toString()
+        txtNumberOfOrderCards.text = currentOrderList.size.toString()
+        txtReadyCards.text = dayActivity.size.toString()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+      /*  val viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        viewModel.getPost()
+        viewModel.myResponse.observe(this, Observer {
+            Log.d(TAG, it.body)
+            Log.d(TAG, it.title)
+            Log.d(TAG, it.id.toString())
+            Log.d(TAG, it.userId.toString())
+        })*/
 
+
+        var txtCook = findViewById<TextView>(R.id.txtCook)
+        var brStolova = 15
         super.onCreate(savedInstanceState)
         setContentView(R.layout.kitchen_activity)
-        var brStolova = 15
         createLists(brStolova)
-        for(i in 0..5){
-            Log.i("\nMyApp", currentOrderList[0].orderItems[i].orderName)
-        }
+
         //  Buttons Orders, Accepted and Ready :
         val btnAccept = findViewById<Button>(R.id.btnAccept)
         val btnOrders = findViewById<Button>(R.id.btnOrders)
@@ -76,6 +122,7 @@ class MainActivity : AppCompatActivity() {
 
         btnOrders.isActivated = true
         btnAccept.isActivated = false
+
         var imgBtnAccount = findViewById<ImageButton>(R.id.imgBtnAccount)
         imgBtnAccount.setOnClickListener {view ->
             val popupMenu = PopupMenu(this, view)
@@ -98,13 +145,24 @@ class MainActivity : AppCompatActivity() {
 
                         builder.setPositiveButton("OK") { dialog, _ ->
                             val number = input.text.toString().toIntOrNull()
-                            if (number != null) {
+
+                            if(!tablesOrders.all { it.sankOrders.isEmpty() && it.readyMeals.isEmpty() }){
+                            Toast.makeText(this, "Nisu sve narudžbe naplaćene!", Toast.LENGTH_SHORT).show()
+                            }
+                            else if (number != null ) {
+                                //PROVJERITI DA LI JE OVAJ PRISTUP OKEJ sve se narudžbe brišu pri promjeni broja stolova
+                               tablesOrders.clear()
+                                for(i in 1..number){
+                                    tablesOrders.add(Order(i, false, ArrayList(), ArrayList(),ArrayList()))
+                                }
+                                getUserDataAcc()
+
                                 brStolova = number
-                                createLists(number)
-                                btnOrders.performClick()
-                                getUserData()
-                            } else {
-                                Toast.makeText(this, "Pogrešan unos! Molimo unesite ispravan broj stolova.", Toast.LENGTH_SHORT).show()                            }
+                                //createLists(number)
+                            }
+                            else {
+                                Toast.makeText(this, "Pogrešan unos! Molimo unesite ispravan broj stolova.", Toast.LENGTH_SHORT).show()
+                            }
                             dialog.dismiss()
                         }
                         builder.setNegativeButton("Odustani") { dialog, _ -> dialog.cancel() }
@@ -117,30 +175,14 @@ class MainActivity : AppCompatActivity() {
             popupMenu.show()
         }
 
-
-        var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
-        var txtNumberOfOrderCards = findViewById<TextView>(R.id.txtNumberOfOrderCards)
-        txtAcceptedCards.text = brStolova.toString()
-        txtNumberOfOrderCards.text = currentOrderList.size.toString()
-
-
+        fixCookVisibility(currentOrderList)
 
         btnOrders.setOnClickListener {
             btnOrders.isActivated = true
             btnAccept.isActivated = false
             btnReady.isActivated = false
-            var adapterOrdr = OrdersAdapter(this.currentOrderList,0) { order, item ->
-                run {
-                    ordersRecyclerView.post(Runnable {
-                        ordersRecyclerView.adapter?.notifyDataSetChanged()
-                    })
-                }
-            }
-            fixCookVisibility(currentOrderList)
-            ordersRecyclerView.adapter = adapterOrdr
-            txtAcceptedCards.text = brStolova.toString()
 
-            //getUserData()
+            getUserData()
             ordersRecyclerView.visibility = View.VISIBLE
             recycleViewTables.visibility = View.INVISIBLE
         }
@@ -149,34 +191,25 @@ class MainActivity : AppCompatActivity() {
             btnAccept.isActivated = true
             btnOrders.isActivated = false
             btnReady.isActivated = false
-            var adapterAcc = TablesAdapter(this.ordersToBePayed, 1) { order ->
-                run {
-                    recycleViewTables.post(Runnable {
-                        recycleViewTables.adapter?.notifyDataSetChanged()
-                    })
-                }
-            }
-            fixCookVisibility(ordersToBePayed)
-            recycleViewTables.adapter = adapterAcc
+            getUserDataAcc()
             ordersRecyclerView.visibility = View.INVISIBLE
             recycleViewTables.visibility = View.VISIBLE
-            //getUserDataAcc()
         }
+
         btnReady.setOnClickListener {
             btnOrders.isActivated = false
             btnAccept.isActivated = false
             btnReady.isActivated = true
-            var adapterReady = OrdersAdapter(this.readyOrderList,2) { order, item ->
+            var adapterReady = OrdersDayActivityAdapter(this.dayActivity,2) { order, item ->
                 run {
                     ordersRecyclerView.post(Runnable {
                         ordersRecyclerView.adapter?.notifyDataSetChanged()
                     })
                 }
             }
-            fixCookVisibility(readyOrderList)
+            fixCookVisibility(dayActivity)
             ordersRecyclerView.adapter = adapterReady
-
-            ordersRecyclerView.visibility = View.INVISIBLE
+            ordersRecyclerView.visibility = View.VISIBLE
             recycleViewTables.visibility = View.INVISIBLE
         }
 
@@ -192,9 +225,6 @@ class MainActivity : AppCompatActivity() {
 
     //Funkcije za izmjenu nizova:
     private fun getUserData() { //Pokreće se odlaskom na window Narudžbe
-        var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
-        var txtNumberOfOrderCards = findViewById<TextView>(R.id.txtNumberOfOrderCards)
-
         var adapter = OrdersAdapter(this.currentOrderList, 0) { order, item ->
             /*run {
                 if ( item.orderName=="0") {//!accepted &&
@@ -215,19 +245,31 @@ class MainActivity : AppCompatActivity() {
                 }
             }*/
             run {
-                ordersRecyclerView.post(Runnable {
+                if ( item.orderName=="0") {
+                    currentOrderList.remove(order)
+                    if(order.status){
+                        dayActivity.add(order)
+                    }
+                   else if(tablesOrders.indexOfFirst { it.id == order.id }!=-1){
+                        tablesOrders.find { it.id == order.id }?.readyMeals?.addAll(order.readyMeals)
+                        tablesOrders.find { it.id == order.id }?.sankOrders?.addAll(order.sankOrders)
+                        tablesOrders.find { it.id == order.id }?.inPreparationMeals?.addAll(order.inPreparationMeals)
+                    }
+                    else{ tablesOrders.add(order)}
+
                     ordersRecyclerView.adapter?.notifyDataSetChanged()
-                })
+                }
+                fixCookVisibility(currentOrderList)
+
             }
         }
+        fixCookVisibility(currentOrderList)
         ordersRecyclerView.adapter = adapter
     }
 
-    /*private fun getUserDataAcc() { //Pokreće se odlaskom na window Prihvaćeno
-        var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
-        var txtReadyCards = findViewById<TextView>(R.id.txtReadyCards)
-        var adapter = TablesAdapter(this.ordersToBePayed,1) { order ->
-            run {
+    private fun getUserDataAcc() { //Pokreće se odlaskom na window Prihvaćeno
+        var adapter = TablesAdapter(this.tablesOrders, 1) { order ->
+           /* run {
                 if (item.orderName=="0") {
                     this.ordersToBePayed.remove(order)
                     if(readyOrderList.indexOfFirst { it.id == order.id }!=-1){
@@ -247,16 +289,33 @@ class MainActivity : AppCompatActivity() {
                     recycleViewTables.adapter?.notifyDataSetChanged()
                 }
             }
+        }*/
+            run {
+                if(order.id != 0){
+                    var order2 = order.copy()
+                    order2.sankOrders = order.sankOrders.clone() as ArrayList<OrderItem>
+                    order2.readyMeals = order.readyMeals.clone() as ArrayList<OrderItem>
+                    order2.inPreparationMeals = order.inPreparationMeals.clone() as ArrayList<OrderItem>
+
+                    dayActivity.add(order2)
+                    tablesOrders.find { it.id == order.id }?.readyMeals?.clear()
+                    tablesOrders.find { it.id == order.id }?.sankOrders?.clear()
+                    tablesOrders.find { it.id == order.id }?.inPreparationMeals?.clear()
+                    fixCookVisibility(tablesOrders)
+
+                }
+                ordersRecyclerView.adapter?.notifyDataSetChanged()
+            }
         }
+        fixCookVisibility(tablesOrders)
         recycleViewTables.adapter = adapter
         ordersRecyclerView.visibility = View.GONE
         recycleViewTables.visibility = View.VISIBLE
-    }*/
-
+    }
 
     //Funkcija koja briše narudžbe(item-e) u karticama prvog niza
     //i prebacuje ih u drugi niz:
-    private fun orderItemInteraction(orderedArray: ArrayList<Order>, acceptedArray: ArrayList<Order>,
+    /*private fun orderItemInteraction(orderedArray: ArrayList<Order>, acceptedArray: ArrayList<Order>,
                                      order: Order, item: OrderItem){
 
         var txtAcceptedCards = findViewById<TextView>(R.id.txtAcceptedCards)
@@ -283,7 +342,7 @@ class MainActivity : AppCompatActivity() {
         txtAcceptedCards.text = ordersToBePayed.size.toString()
         txtNumberOfOrderCards.text = currentOrderList.size.toString()
         txtReadyCards.text = readyOrderList.size.toString()
-    }
+    }*/
 
 }
 

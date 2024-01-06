@@ -23,6 +23,9 @@ class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
 
     override fun onBindViewHolder(holder: OrdersAdapter.OrdersViewHolder, position: Int) {
         var activated2 = false
+        var usluzenoSank = false
+        var usluzenoKuhinja = false
+
         val currentOrder = orderItemsList[position]
         val currentClickedItem = OrderItem("0",0,false) //Nije kliknuto na item
         holder.orderNumber.text = currentOrder.id.toString()
@@ -32,6 +35,7 @@ class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
 
         holder.orderItemsFoodReady.layoutManager = LinearLayoutManager(holder.orderNumber.context)
         holder.orderItemsFoodReady.setHasFixedSize(true)
+
         holder.orderItemsFoodMaking.layoutManager = LinearLayoutManager(holder.orderNumber.context)
         holder.orderItemsFoodMaking.setHasFixedSize(true)
 
@@ -39,29 +43,56 @@ class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
         holder.imgTakeAway.visibility = View.INVISIBLE
         if(currentOrder.status){
             holder.imgTakeAway.visibility = View.VISIBLE
+            holder.txtOrderText.text = "\nNarudžba za ponijeti:"
         }
-        if(activated == 1) {
-            holder.btnAcceptAll.isActivated = true
-            holder.btnAcceptAll.text = "SPREMNO SVE"
-        }
-        else if(activated == 2){
-            holder.btnAcceptAll.isActivated = false
-            holder.btnAcceptAll.visibility = View.INVISIBLE
-            holder.txtOrderText.text = "\n  Narudžba br.\n\nSpremljena jela:"
+        if(usluzenoSank && usluzenoKuhinja) {
+            holder.btnAcceptAll.performClick()
         }
 
-        holder.orderItemsDrink.adapter = OrderItemsAdapter(currentOrder.orderItems, activated, activated2) { itemClicked ->
+        holder.orderItemsDrink.adapter = OrderItemsAdapter(currentOrder.sankOrders, activated, activated2) { itemClicked ->
             onItemClicked(currentOrder,itemClicked)
+            if(!itemClicked.status){
+                usluzenoSank = false
             }
-        holder.orderItemsFoodReady.adapter = OrderItemsAdapter(currentOrder.orderItems, activated, activated2) { itemClicked ->
+            }
+        holder.orderItemsFoodReady.adapter = OrderItemsAdapter(currentOrder.readyMeals, activated, activated2) { itemClicked ->
             onItemClicked(currentOrder,itemClicked)
+            if(!itemClicked.status){
+                usluzenoKuhinja = false
+            }
         }
-        holder.orderItemsFoodMaking.adapter = OrderItemsWithoutButtonsAdapter(currentOrder.orderItems, activated, activated2) { itemClicked ->
+        holder.orderItemsFoodMaking.adapter = OrderItemsWithoutButtonsAdapter(currentOrder.inPreparationMeals, activated, activated2) { itemClicked ->
             onItemClicked(currentOrder,itemClicked)
         }
 
         holder.btnAcceptAll.setOnClickListener {
-           // onItemClicked(currentOrder,currentClickedItem)
+            currentOrder.sankOrders.forEach{item -> item.status=false} // Kada ode u Table da ne ostanu prethodno checkirana polja
+            currentOrder.readyMeals.forEach{item -> item.status=false}
+            onItemClicked(currentOrder,currentClickedItem)
+        }
+
+        holder.btnAcceptfromSank.setOnClickListener {
+            usluzenoSank = true
+            var adapterReady = OrderItemsAdapter(currentOrder.sankOrders,activated, true) { itemClicked ->
+                run {
+                    holder.orderItemsDrink.post(Runnable {
+                        holder.orderItemsDrink.adapter?.notifyDataSetChanged()
+                    })
+                }
+            }
+            holder.orderItemsDrink.adapter = adapterReady
+        }
+
+        holder.btnAcceptAllFood.setOnClickListener {
+            usluzenoKuhinja = true
+            var adapterReady = OrderItemsAdapter(currentOrder.readyMeals,activated, true) { itemClicked ->
+                run {
+                    holder.orderItemsFoodReady.post(Runnable {
+                        holder.orderItemsDrink.adapter?.notifyDataSetChanged()
+                    })
+                }
+            }
+            holder.orderItemsFoodReady.adapter = adapterReady
         }
     }
 
@@ -78,8 +109,12 @@ class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
         val orderItemsFoodReady: RecyclerView = itemView.findViewById(R.id.recyclerViewFoodReady)
         val orderItemsFoodMaking: RecyclerView = itemView.findViewById(R.id.recyclerViewFoodMaking)
 
-        val btnAcceptAll: Button = itemView.findViewById(R.id.btnAcceptAll)
+        val btnAcceptAll: Button = itemView.findViewById(R.id.btnX)
         val imgTakeAway: ImageView = itemView.findViewById(R.id.imgTakeAway)
+        val btnAcceptfromSank: Button = itemView.findViewById(R.id.btnAcceptfromSank)
+
+        val txtJelaUPripremi : TextView = itemView.findViewById(R.id.txtJelaUPripremi)
+        val btnAcceptAllFood : Button = itemView.findViewById(R.id.btnAcceptAllFood)
 
     }
 

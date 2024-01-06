@@ -31,7 +31,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:paddingLeft="5dp"
-                android:text="\n Narudžba za stol:"
+                android:text="\n Narudžba broj:"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
@@ -66,20 +66,6 @@
                     android:visibility="visible" />
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/btnX"
-                android:layout_width="100dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="1dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:background="@drawable/btn_accept_all_styles"
-                android:text="Usluženo sve"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
-
         </LinearLayout>
 
         <View
@@ -113,20 +99,6 @@
                         android:paddingLeft="15dp"
                         android:text="Šank:"
                         android:textSize="20sp" />
-
-                    <Button
-                        android:id="@+id/btnAcceptfromSank"
-                        android:layout_width="15dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="1dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginBottom="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/btn_accept_all_styles"
-                        android:text="Usluženo"
-                        android:textColor="@color/white"
-                        android:textSize="14sp" />
 
                 </LinearLayout>
 
@@ -169,22 +141,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="20dp"
                         android:paddingLeft="15dp"
-                        android:text="Spremna jela:"
+                        android:text="Naručena jela:"
                         android:textSize="20sp" />
 
-                    <Button
-                        android:id="@+id/btnAcceptAllFood"
-                        android:layout_width="15dp"
-                        android:layout_height="28dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="1dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginBottom="1dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/btn_accept_all_styles"
-                        android:text="Usluženo"
-                        android:textColor="@color/white"
-                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <View
@@ -196,7 +155,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewFoodReady"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"
+                    android:layout_height="match_parent"
                     android:fadeScrollbars="true"
                     android:paddingTop="20dp"
                     android:scrollbarSize="4dp"
@@ -211,32 +170,12 @@
                     android:layout_height="1dp"
                     android:background="?android:attr/listDivider" />
 
-                <TextView
-                    android:id="@+id/txtJelaUPripremi"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_marginRight="2dp"
-                    android:background="@color/white"
-                    android:paddingLeft="15dp"
-                    android:text="Jela u pripremi:"
-                    android:textSize="20sp" />
-
                 <View
                     android:id="@+id/divider7"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="?android:attr/listDivider" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewFoodMaking"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fadeScrollbars="true"
-                    android:scrollbarSize="4dp"
-                    android:scrollbarStyle="insideOverlay"
-                    android:scrollbarThumbHorizontal="@color/pinkyDarkTransparent"
-                    android:scrollbars="vertical"
-                    android:verticalScrollbarPosition="left" />
             </LinearLayout>
 
         </LinearLayout>
