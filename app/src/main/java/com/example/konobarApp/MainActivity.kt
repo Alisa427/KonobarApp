@@ -3,6 +3,7 @@ package com.example.konobarApp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -20,6 +21,9 @@ import com.example.konobarApp.adapters.OrdersDayActivityAdapter
 import com.example.konobarApp.adapters.TablesAdapter
 import com.example.konobarApp.models.Order
 import com.example.konobarApp.models.OrderItem
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+
 //import serverStuff.MainActivityViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -104,6 +108,23 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, it.userId.toString())
         })*/
 
+        //Inicijalizacija Firestore database
+        val baza = Firebase.firestore
+        baza.collection("komentari")
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    Log.d("provjera", "Greška prilikom osluškivanja promjena", error)
+                    return@addSnapshotListener
+                }
+
+                if (value != null) {
+                    for (document in value.documents) {
+                        Log.d("provjera", "${document.id} => ${document.data}")
+                    }
+                } else {
+                    Log.d("provjera", "Nema podataka u kolekciji")
+                }
+            }
 
         var txtCook = findViewById<TextView>(R.id.txtCook)
         var brStolova = 15
