@@ -31,18 +31,18 @@ class TablesAdapter(private val tablesOrders: ArrayList<Order>,
     override fun onBindViewHolder(holder: TablesAdapterViewHolder, position: Int) {
         val currentOrder = tablesOrders[position]
         val emptyOrder = ArrayList<Order>()
-        holder.btnTable.text = currentOrder.id.toString()
+        holder.btnTable.text = currentOrder.brStola.toString()
         holder.btnTable.isActivated = !currentOrder.sankOrders.isEmpty() || !currentOrder.readyMeals.isEmpty()
         holder.btnTable.setOnClickListener {
            // if(areArraysEmpty(currentOrder)){
-            showPopup(holder.btnTable.context, holder.btnTable, currentOrder.id.toString(), currentOrder, object : PopupCallback {
+            showPopup(holder.btnTable.context, holder.btnTable, currentOrder.brStola.toString(), currentOrder, object : PopupCallback {
                 override fun onDismiss(isTableActivated: Boolean) {
                         holder.btnTable.isActivated = isTableActivated
 
                 }
             })
         }
-        onTableButtonClicked(Order(0,false,ArrayList<OrderItem>(),ArrayList<OrderItem>(),ArrayList<OrderItem>()))
+        onTableButtonClicked(Order(0,0,false,ArrayList<OrderItem>(),ArrayList<OrderItem>(),ArrayList<OrderItem>()))
     }
 
     class TablesAdapterViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){

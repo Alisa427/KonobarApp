@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginRight="50dp">
+    android:layout_marginRight="50dp"
+    android:background="@android:color/transparent">
 
 
     <LinearLayout
@@ -22,7 +23,8 @@
             android:orientation="horizontal"
             android:paddingLeft="20dp"
             android:paddingTop="20dp"
-            android:paddingRight="20dp">
+            android:paddingRight="20dp"
+            android:background="@android:color/transparent">
 
             <TextView
                 android:id="@+id/txtViewOrderNumber"

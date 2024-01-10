@@ -28,7 +28,7 @@ class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
 
         val currentOrder = orderItemsList[position]
         val currentClickedItem = OrderItem("0",0,false) //Nije kliknuto na item
-        holder.orderNumber.text = currentOrder.id.toString()
+        holder.orderNumber.text = currentOrder.brStola.toString()
 
         holder.orderItemsDrink.layoutManager = LinearLayoutManager(holder.orderNumber.context)
         holder.orderItemsDrink.setHasFixedSize(true)
