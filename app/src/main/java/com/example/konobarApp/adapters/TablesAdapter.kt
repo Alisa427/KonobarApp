@@ -62,8 +62,9 @@ class TablesAdapter(private val tablesOrders: ArrayList<Order>,
         var orderOfThisTable = ArrayList<OrderItem>()
         orderOfThisTable.addAll(order.sankOrders)
         orderOfThisTable.addAll(order.readyMeals)
-
-        var adapterPopup = OrderItemsAdapter(orderOfThisTable, 0, false) { itemClicked ->
+        var ukupnaCijena = 0.0
+        orderOfThisTable.forEach { ukupnaCijena = ukupnaCijena + it.price.toDouble() }
+        var adapterPopup = OrderItemsAdapter(orderOfThisTable, 4, false) { itemClicked ->
             run {
                 recyclerViewOrder.post(Runnable {
                     recyclerViewOrder.adapter?.notifyDataSetChanged()  //Kliknut item
@@ -76,6 +77,9 @@ class TablesAdapter(private val tablesOrders: ArrayList<Order>,
 
         var txtOrderNumber: TextView = popupView.findViewById(R.id.txtOrderNumber)
         txtOrderNumber.text = number
+
+        var txtUkupnaCijena: TextView = popupView.findViewById(R.id.txtUkupnaCijena)
+        txtUkupnaCijena.text = "Za naplatiti: $ukupnaCijena KM"
 
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setView(popupView)

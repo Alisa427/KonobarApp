@@ -1,18 +1,22 @@
 package com.example.konobarApp.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.konobarApp.R
 import com.example.konobarApp.models.Order
 import com.example.konobarApp.models.OrderItem
 
-class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
+class OrdersAdapter(
+                    private val context: Context,
+                    private val orderItemsList: ArrayList<Order>,
                     private val activated:Int, //n=0, acc=1, ready=2 bilo prije sad bi to trebala biti info za takeaway
                     private val onItemClicked: ((order:Order, item:OrderItem )->Unit)): RecyclerView.Adapter<OrdersAdapter.OrdersViewHolder>(){
 
@@ -68,7 +72,12 @@ class OrdersAdapter(private val orderItemsList: ArrayList<Order>,
         holder.btnAcceptAll.setOnClickListener {
             currentOrder.sankOrders.forEach{item -> item.status=false} // Kada ode u Table da ne ostanu prethodno checkirana polja
             currentOrder.readyMeals.forEach{item -> item.status=false}
-            onItemClicked(currentOrder,currentClickedItem)
+            if(currentOrder.inPreparationMeals.isEmpty()) {
+                onItemClicked(currentOrder, currentClickedItem)
+            }
+            else{
+                Toast.makeText(context, "Nisu spremljena sva jela!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         holder.btnAcceptfromSank.setOnClickListener {

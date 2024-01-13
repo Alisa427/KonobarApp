@@ -36,6 +36,13 @@ class OrderItemsAdapter(private val orderItemsList: ArrayList<OrderItem>,
             onItemButtonClicked(currentItem)
         }
 
+        if(activated == 4) {
+            //Zoove table sa orderTableList
+            if (!holder.checkedTxtItem.text.contains("KM")) {
+                holder.checkedTxtItem.text =
+                    currentItem.orderName + " " + currentItem.price.toString() + " KM"
+            }
+        }
 
 
         /*holder.orderName.text = currentItem.orderName

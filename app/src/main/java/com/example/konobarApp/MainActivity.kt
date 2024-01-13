@@ -150,6 +150,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.konobar_activity)
 
+        //  Buttons Orders, Accepted and Ready :
+        val btnAccept = findViewById<Button>(R.id.btnAccept)
+        val btnOrders = findViewById<Button>(R.id.btnOrders)
+        val btnReady = findViewById<Button>(R.id.btnReady)
+
+        btnOrders.isActivated = true
+        btnAccept.isActivated = false
+
         //************ NOTIFIKACIJE ******************
         var drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         //drawerLayout.closeDrawer(GravityCompat.END)
@@ -217,7 +225,7 @@ class MainActivity : AppCompatActivity() {
                                 btnNotifikacije.backgroundTintList = ColorStateList.valueOf(Color.YELLOW)
                             }
                         }
-                       // getUserData()
+                        // getUserData()
                     }
             }
 
@@ -228,7 +236,6 @@ class MainActivity : AppCompatActivity() {
                 narudzbeCollection
                     .get()
                     .addOnSuccessListener { result ->
-                        Log.d("success narudzbe", result.size().toString())
                         brojacID = 0 //bit ce ponovljenih id-ova u odnosu na one koji su otisli za stolove
                         currentOrderList.clear()
                         for (document in result) { //jelaaa sva moguca sa brojevima stolova
@@ -239,6 +246,7 @@ class MainActivity : AppCompatActivity() {
                             val kategorija = document.get("kategorija") as String
                             val spremljeno = document.get("spremljeno") as Boolean
                             val dostavljeno = document.get("dostavljeno") as Boolean
+                            Log.d("hm1", naziv)
 
                             // dostavljeno viska i placeno
 
@@ -251,6 +259,7 @@ class MainActivity : AppCompatActivity() {
                                                 item
                                             )
                                         } else {
+                                            Log.d("hm2",  currentOrderList.size.toString())
                                             currentOrderList.find { it.brStola == brojStola }?.inPreparationMeals?.add(
                                                 item
                                             )
@@ -266,12 +275,16 @@ class MainActivity : AppCompatActivity() {
                                     val listaInPreparation = ArrayList<OrderItem>()
                                     if (kategorija == "pice") {
                                         listaSank.add(item)
-                                    } else if (kategorija == "hrana") {
+                                    } else if (kategorija == "Doručak") {
                                         if (spremljeno) {
                                             listaReadyMeals.add(item)
                                         } else {
                                             listaInPreparation.add(item)
                                         }
+                                    }
+                                    Log.d("hm3", naziv)
+                                    if(!listaInPreparation.isEmpty()) {
+                                        Log.d("hm4 je li ", listaInPreparation.get(0).orderName)
                                     }
                                     currentOrderList.add(
                                         Order(
@@ -286,24 +299,24 @@ class MainActivity : AppCompatActivity() {
                                     brojacID = brojacID + 1
                                 }
                             }
-
                         }
-                        getUserData()
+                        //Osigurati da se mijenja broj narudzbi u tabu i onda kada se ne nalazimo u istom:
+                        var txtNumberOfOrderCards = findViewById<TextView>(R.id.txtNumberOfOrderCards)
+                        txtNumberOfOrderCards.text = currentOrderList.size.toString()
+                        if(btnOrders.isActivated) {
+                            getUserData()
+                        }
                     }
             }
 
-
-
         //createLists(brStolova,listaJela2)
 
-        //  Buttons Orders, Accepted and Ready :
-        val btnAccept = findViewById<Button>(R.id.btnAccept)
-        val btnOrders = findViewById<Button>(R.id.btnOrders)
-        val btnReady = findViewById<Button>(R.id.btnReady)
 
-        btnOrders.isActivated = true
-        btnAccept.isActivated = false
 
+        var dayActivityInfo = findViewById<TextView>(R.id.txtdayActivityInfo)
+         dayActivityInfo.visibility = View.INVISIBLE
+
+        // ********** PROFIL I IZMJENA BROJA STOLOVA **********
         var imgBtnAccount = findViewById<ImageButton>(R.id.imgBtnAccount)
         imgBtnAccount.setOnClickListener {view ->
             val popupMenu = PopupMenu(this, view)
@@ -366,6 +379,8 @@ class MainActivity : AppCompatActivity() {
             getUserData()
             ordersRecyclerView.visibility = View.VISIBLE
             recycleViewTables.visibility = View.INVISIBLE
+            dayActivityInfo.visibility = View.INVISIBLE
+
         }
 
         btnAccept.setOnClickListener {
@@ -375,12 +390,22 @@ class MainActivity : AppCompatActivity() {
             getUserDataAcc()
             ordersRecyclerView.visibility = View.INVISIBLE
             recycleViewTables.visibility = View.VISIBLE
+            dayActivityInfo.visibility = View.INVISIBLE
+
         }
 
         btnReady.setOnClickListener {
             btnOrders.isActivated = false
             btnAccept.isActivated = false
             btnReady.isActivated = true
+            var dnevniPazar = 0.0
+           dayActivity.forEach {
+                it.readyMeals.forEach { dnevniPazar= dnevniPazar + it.price.toDouble() }
+                it.sankOrders.forEach { dnevniPazar= dnevniPazar + it.price.toDouble() }
+            }
+            dayActivityInfo.text = "Dnevni pazar: ${dnevniPazar} KM \nBroj dnevnih narudžbi: ${dayActivity.size.toString()}"
+            dayActivityInfo.visibility = View.VISIBLE
+
             var adapterReady = OrdersDayActivityAdapter(this.dayActivity,2) { order, item ->
                 run {
                     ordersRecyclerView.post(Runnable {
@@ -406,7 +431,7 @@ class MainActivity : AppCompatActivity() {
 
     //Funkcije za izmjenu nizova:
     private fun getUserData() { //Pokreće se odlaskom na window Narudžbe
-        var adapter = OrdersAdapter(this.currentOrderList, 0) { order, item ->
+        var adapter = OrdersAdapter(this, this.currentOrderList, 0) { order, item ->
             run {
 
                 if ( item.orderName=="0") {
